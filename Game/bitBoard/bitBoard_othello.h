@@ -20,6 +20,7 @@ public:
 class othello{
 public:
 	othello();
+	~othello();
 	void init();
 	bool canPut(int thei,int thej,int type);
 	bool canMove(int type);

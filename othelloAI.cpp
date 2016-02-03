@@ -2,23 +2,26 @@
 #include "cstdio"
 othelloAI::othelloAI(){
 	stepSize = 0.01;
-	lastCharacteristic = new int[18];
+	lastCharacteristic = new int[22];
 	table = new double**[2];
 	for(int i=0;i<2;i++){
-		table[i] = new double*[4];
-		for(int j=0;j<4;j++){
+		table[i] = new double*[5];
+		for(int j=0;j<5;j++){
 			table[i][j] = new double [1<<16];//4^8
 		}
 	}
-	FILE *fPtr = fopen("eight_tuple_2.knowledge","r");
+	FILE *fPtr = fopen("eight_tuple_3.knowledge","r");
 	if(fPtr) readData(fPtr);
 	else generateInitData();
 }
 
-othelloAI::~othelloAI(){
+othelloAI::~othelloAI(){//need to be veified
 	writeData();
 	delete[] lastCharacteristic;
-	for(int i=0;i<4;i++){
+	for(int i=0;i<2;i++){
+		for(int j=0;j<5;j++){
+			delete[] table[i][j];
+		}
 		delete[] table[i];
 	}
 	delete[] table;
@@ -26,7 +29,7 @@ othelloAI::~othelloAI(){
 
 void othelloAI::generateInitData(){
 	for(int i=0;i<2;i++){
-		for(int j=0;j<4;j++){
+		for(int j=0;j<5;j++){
 			for(int k=0;k<(1<<16);k++){
 				table[i][j][k] = 1.0;
 			}
@@ -36,16 +39,16 @@ void othelloAI::generateInitData(){
 
 void othelloAI::readData(FILE* fPtr){
 	for(int i=0;i<2;i++){
-		for(int j=0;j<4;j++){
+		for(int j=0;j<5;j++){
 			fread(table[i][j],sizeof(double),1<<16,fPtr);
 		}
 	}
 }
 
 void othelloAI::writeData(){
-	FILE *fPtr = fopen("eight_tuple_2.knowledge","w");
+	FILE *fPtr = fopen("eight_tuple_3.knowledge","w");
 	for(int i=0;i<2;i++){
-		for(int j=0;j<4;j++){
+		for(int j=0;j<5;j++){
 			fwrite(table[i][j],sizeof(double),1<<16,fPtr);
 		}
 	}
@@ -99,11 +102,11 @@ double othelloAI::evaluate(int board[8][8],int type){
 */
 double othelloAI::evaluate(int board[8][8],int type){
 	type--;
-	static int characteristic[18];
+	static int characteristic[22];
 	encode(board,characteristic);
-	const int role[18] = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3};
+	const int role[22] = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,4,4,4,4};
 	double ans = 0;
-	for(int i=0;i<18;i++){
+	for(int i=0;i<22;i++){
 		ans += table[type][role[i]][characteristic[i]];
 	}
 	return ans;
@@ -123,19 +126,19 @@ void othelloAI::learning(int characteristic[16],double goal,int type){
 	}
 }*/
 
-void othelloAI::learning(int characteristic[18],double goal,int type){
+void othelloAI::learning(int characteristic[22],double goal,int type){
 //printf("goal = %.18f\t",goal);
 	type--;
-	const int role[18] = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3};
-	double temp[18];
+	const int role[22] = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,4,4,4,4};
+	double temp[22];
 	double ori = 0;
-	for(int i=0;i<18;i++){
+	for(int i=0;i<22;i++){
 		ori += temp[i] = table[type][role[i]][characteristic[i]];
 	}
 	double diff = goal-ori;
 //printf("ori = %.18f\tdiff =%.18f\t",ori,diff);
 //	double check = 0.0;
-	for(int i=0;i<18;i++){
+	for(int i=0;i<22;i++){
 //		printf("%.18f+%.18f(%.18f*%.18f)",table[type][role[i]][characteristic[i]],diff*(temp[i]/ori)*stepSize,temp[i]/ori);
 		table[type][role[i]][characteristic[i]] += diff*(temp[i]/ori)*stepSize;
 //		printf(" = %.18f ",table[type][role[i]][characteristic[i]]);
@@ -162,7 +165,7 @@ void othelloAI::encode(int board[8][8],int characteristic[16]){
 }
 */
 
-void othelloAI::encode(int board[8][8],int characteristic[18]){
+void othelloAI::encode(int board[8][8],int characteristic[22]){
 
 //near side1
 	characteristic[0] = (board[0][0]<<14)|(board[0][1]<<12)|(board[0][2]<<10)|(board[0][3]<<8)|(board[1][0]<<6)|(board[1][1]<<4)|(board[1][2]<<2)|board[1][3];
@@ -186,6 +189,11 @@ void othelloAI::encode(int board[8][8],int characteristic[18]){
 //diagonal
 	characteristic[16] = (board[0][0]<<14)|(board[1][1]<<12)|(board[2][2]<<10)|(board[3][3]<<8)|(board[4][4]<<6)|(board[5][5]<<4)|(board[6][6]<<2)|board[7][7];
 	characteristic[17] = (board[7][0]<<14)|(board[6][1]<<12)|(board[5][2]<<10)|(board[4][3]<<8)|(board[3][4]<<6)|(board[2][5]<<4)|(board[1][6]<<2)|board[0][7];
+//center
+	characteristic[18] = (board[2][2]<<14)|(board[2][3]<<12)|(board[2][4]<<10)|(board[2][5]<<8)|(board[3][2]<<6)|(board[3][3]<<4)|(board[3][4]<<2)|board[3][5];
+	characteristic[19] = (board[5][2]<<14)|(board[5][3]<<12)|(board[5][4]<<10)|(board[5][5]<<8)|(board[4][2]<<6)|(board[4][3]<<4)|(board[4][4]<<2)|board[4][5];
+	characteristic[20] = (board[2][2]<<14)|(board[3][2]<<12)|(board[4][2]<<10)|(board[5][2]<<8)|(board[2][3]<<6)|(board[3][3]<<4)|(board[4][3]<<2)|board[5][3];
+	characteristic[21] = (board[2][5]<<14)|(board[3][5]<<12)|(board[4][5]<<10)|(board[5][5]<<8)|(board[2][4]<<6)|(board[3][4]<<4)|(board[4][4]<<2)|board[5][4];
 }
 
 void othelloAI::gameOver(int board[8][8],int type){

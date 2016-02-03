@@ -3,6 +3,7 @@
 class othello{
 public:
 	othello();
+	~othello();
 	void init();
 	bool legalCoordinate(int,int);
 	bool canPut(int,int,int);
