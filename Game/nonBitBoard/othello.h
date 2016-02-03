@@ -9,6 +9,7 @@ public:
 	bool canMove(int);
 	void putChess(int,int,int);
 	void getBoard(int [][8]);
+	void setBoard(int [][8]);
 private:
 	int **board;
 };

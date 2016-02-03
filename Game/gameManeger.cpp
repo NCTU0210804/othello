@@ -4,8 +4,8 @@ void gameManeger::playgame(othelloPlayer &black,othelloPlayer &white,int round){
 	static int temp[8][8];
 	while(round--){
 		game.init();
-		black.initial();
-		white.initial();
+		black.init();
+		white.init();
 		int passCounter = 0;
 		int turn = 0;
 		while(passCounter!=2){
@@ -20,8 +20,18 @@ void gameManeger::playgame(othelloPlayer &black,othelloPlayer &white,int round){
 			if(++turn>1) turn = 0;
 		}
 		game.getBoard(temp);
-		black.gameOver(temp);
-		white.gameOver(temp);
+		black.gameOver(temp,1);
+		white.gameOver(temp,2);
+		int result = 0;
+		for(int i=0;i<8;i++){
+			for(int j=0;j<8;j++){
+				if(temp[i][j]==1) result++;
+				if(temp[i][j]==2) result--;
+			}
+		}
+		if(result>0) mystatistic.black_win++;
+		else if(result==0) mystatistic.draw_game++;
+		else mystatistic.white_win++;
 	}
 }
 
@@ -40,4 +50,10 @@ inline bool gameManeger::oneMove(othelloPlayer &player,int type){
 	}
 	game.putChess(geti,getj,type);
 	return 1;
+}
+
+void gameManeger::showStatistic(){
+	printf("Black wins:\t%d\n",mystatistic.black_win);
+	printf("White wins:\t%d\n",mystatistic.white_win);
+	printf("Draw games:\t%d\n",mystatistic.draw_game);
 }

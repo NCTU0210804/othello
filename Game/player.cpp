@@ -20,7 +20,7 @@ void manPlayer::getIllegaelMessage(int thei,int thej,int type){
 	printf("%d,%d is illegal place for %d!!!\n",thei,thej,type);
 }
 
-void manPlayer::gameOver(int board[8][8]){
+void manPlayer::gameOver(int board[8][8],int type){
 	int black = 0,white = 0;
 	for(int i=0;i<8;i++){
 		for(int j=0;j<8;j++){
@@ -31,6 +31,18 @@ void manPlayer::gameOver(int board[8][8]){
 		puts("");
 	}
 	printf("Game Over.Black:White = %d:%d.\n",black,white);
+	black -= white;
+	if(black==0){
+		puts("Draw game!");
+		return;
+	}
+	if(type==2) black = -black;
+	printf("Human %s\n",black>0?"wins":"loses");
+}
+
+void computerPlayer::getIllegaelMessage(int thei, int thej, int type){
+	if(!sound) return;
+	printf("random put on illegal place %d,%d as %d!!!\n",thei,thej,type);
 }
 
 int randomPlayer::generateMove(int board[][8],int){
@@ -43,7 +55,4 @@ int randomPlayer::generateMove(int board[][8],int){
 	return geti<<3|getj;
 }
 
-void randomPlayer::getIllegaelMessage(int thei, int thej, int type){
-	if(!sound) return;
-	printf("random put on illegal place %d,%d as %d!!!\n",thei,thej,type);
-}
+

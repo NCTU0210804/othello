@@ -84,3 +84,11 @@ void othello::getBoard(int board[8][8]){
 		}
 	}
 }
+
+void othello::setBoard(int board[8][8]){
+	for(int i=0;i<8;i++){
+		for(int j=0;j<8;j++){
+			this->board[i][j] = board[i][j];
+		}
+	}
+}
