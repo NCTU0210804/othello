@@ -17,7 +17,7 @@ private:
 	void writeData();
 	void learning(int [],double,int);
 	void encode(int [][8],int []);
-	int stepSize;
+	double stepSize;
 	othello simulate;
 	int *lastCharacteristic;
 	double ***table;

@@ -13,7 +13,7 @@ int main(int argc,char*argv[]){
 	ai.setMessage(1);
 	gameManeger maneger;
 	maneger.setPassMassage(0);
-	if(argc==1) maneger.playgame(ai,random);
+	if(argc==1) maneger.playgame(ai,man);
 	else{
 		int get = atoi(argv[1]);
 		maneger.playgame(ai,random,get);
