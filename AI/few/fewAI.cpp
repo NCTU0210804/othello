@@ -28,3 +28,16 @@ double fewContestant::finalScore(int board[8][8],int type){
 	if(score>0) score += 100000000;
 	return score;
 }
+
+int fewContestant::generateMove(int board[8][8],int type){
+	int chess = 0;
+	for(int i=0;i<8;i++){
+		for(int j=0;j<8;j++){
+			if(board[i][j]!=0) chess++;
+		}
+	}
+	searchDeep = 3;
+	if(chess>40) searchDeep = 4;
+	if(chess>50) searchDeep = 14;
+	return AIContestant::generateMove(board,type);
+}

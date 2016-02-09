@@ -27,7 +27,7 @@ void eightTupleAI::generateInitData(){
 	for(int i=0;i<2;i++){
 		for(int j=0;j<5;j++){
 			for(int k=0;k<(1<<16);k++){
-				table[i][j][k] = 1000000000;
+				table[i][j][k] = 1000000;
 			}
 		}
 	}
@@ -94,7 +94,8 @@ void eightTupleLearner::learning(int characteristic[22],double goal,int type){
 	}
 	double diff = goal-ori;
 	for(int i=0;i<22;i++){
-		table[type][role[i]][characteristic[i]] += diff*(temp[i]/ori)*stepSize;
+//		table[type][role[i]][characteristic[i]] += diff*(temp[i]/ori)*stepSize;
+		table[type][role[i]][characteristic[i]] += diff/22*stepSize;		
 	}
 }
 

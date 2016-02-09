@@ -13,6 +13,7 @@ protected:
 class fewContestant:
 public fewAI,
 public AIContestant{
+	int generateMove(int board[8][8],int type);
 protected:
 	double finalScore(int [][8],int);
 };

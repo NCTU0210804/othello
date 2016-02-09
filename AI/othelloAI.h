@@ -33,16 +33,29 @@ protected:
 	virtual void writeData() = 0;
 };
 
+class AITrainer:
+virtual public othelloAI
+{
+public:
+	AITrainer(int a):trainer(a){};
+protected:
+	virtual int generateTrainningMove(int [][8],int type);
+	virtual double trainerAlphaSearch(int board[8][8],int type,double alpha,double beta);
+	int trainer;
+};
+
 class AIContestant:
 virtual public othelloAI,
 public computerPlayer{
 public:
+	AIContestant():searchDeep(3){}
 	virtual void init(){};
 	virtual int generateMove(int[][8],int type);
 	virtual void gameOver(int[][8],int type){};
 protected:
 	virtual double alphaSearch(int board[8][8],int type,int deep,double alpha,double beta,int counter);
 	virtual double betaSearch(int board[8][8],int type,int deep,double alpha,double beta,int counter);
+	int searchDeep;
 //different from sub-class
 	virtual double finalScore(int board[8][8],int type) = 0;
 };

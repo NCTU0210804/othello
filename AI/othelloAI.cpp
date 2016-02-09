@@ -20,6 +20,7 @@ void AILearner::init(){
 }
 
 int AILearner::generateMove(int board[8][8],int type){
+
 	simulate.setBoard(board);
 	int ansi = -1, ansj;
 	static int temp[8][8];
@@ -38,6 +39,7 @@ int AILearner::generateMove(int board[8][8],int type){
 			simulate.setBoard(board);
 		}
 	}
+//printf("%.18f\n",maxScore);
 	learning(lastCharacteristic[type-1],maxScore,type);
 	simulate.putChess(ansi,ansj,type);
 	simulate.getBoard(temp);
@@ -55,7 +57,7 @@ int AIContestant::generateMove(int board[8][8],int type){
 			if(!simulate.canPut(i,j,type)) continue;
 			simulate.putChess(i,j,type);
 			simulate.getBoard(temp);
-			double get = betaSearch(temp,type,3,maxScore,1000000000,0);
+			double get = betaSearch(temp,type,searchDeep,maxScore,1000000000,0);
 			if(get>maxScore||ansi==-1){
 				ansi = i;
 				ansj = j;
@@ -130,3 +132,52 @@ double AIContestant::betaSearch(int board[8][8],int type,int deep,double alpha,d
 	return beta;
 }
 
+
+/****************************Trainer****************************/
+int AITrainer::generateTrainningMove(int board[8][8],int type){
+//puts("trainer!!");
+	int ansi,ansj;
+	double minScore = 1000000000;
+	simulate.setBoard(board);
+	int temp[8][8];
+	for(int i=0;i<8;i++){
+		for(int j=0;j<8;j++){
+			if(!simulate.canPut(i,j,type)) continue;
+			simulate.putChess(i,j,type);
+			simulate.getBoard(temp);
+			double get = trainerAlphaSearch(temp,type,-1000000000,minScore);
+			if(get<minScore){
+				minScore = get;
+				ansi = i;
+				ansj = j;
+			}
+			simulate.setBoard(board);
+		}
+	}
+	return (ansi<<3)|ansj;
+}
+
+double AITrainer::trainerAlphaSearch(int board[8][8],int type,double alpha,double beta){
+	int enemy = 3-type;
+	int ansi,ansj;
+	bool move = 0;
+	simulate.setBoard(board);
+	int temp[8][8];
+	for(int i=0;i<8;i++){
+		for(int j=0;j<8;j++){
+			if(!simulate.canPut(i,j,enemy)) continue;
+			move = 1;
+			simulate.putChess(i,j,enemy);
+			simulate.getBoard(temp);
+			double get = evaluate(temp,enemy);
+			if(get>alpha) alpha = get;
+			if(alpha>beta) return alpha;
+			simulate.setBoard(board);
+		}
+	}
+	if(!move){
+		double get = evaluate(board,enemy);
+		if(get>alpha) alpha = get;
+	}
+	return alpha;
+}
